@@ -1,0 +1,176 @@
+basePath: /
+definitions:
+  Domain.CreateSubscriptionRequest:
+    properties:
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  Domain.Subscription:
+    properties:
+      id:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  Domain.UpdateSubscriptionRequest:
+    properties:
+      id:
+        type: string
+      price:
+        type: integer
+      start_date:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST service for managing user subscriptions
+  title: Subscriptions API
+  version: "1.0"
+paths:
+  /get:
+    get:
+      description: Get all subscriptions for user
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Subscription'
+            type: array
+      summary: Get user subscriptions
+      tags:
+      - subscriptions
+  /gettotalprice:
+    get:
+      description: Get total price with filters
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Service name
+        in: query
+        name: service_name
+        required: true
+        type: string
+      - description: Start date (MM-YYYY)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Total price
+          schema:
+            type: string
+      summary: Get total price
+      tags:
+      - subscriptions
+  /list:
+    get:
+      description: Get all subscriptions in system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Subscription'
+            type: array
+      summary: List all subscriptions
+      tags:
+      - subscriptions
+  /post:
+    post:
+      consumes:
+      - application/json
+      description: Create new subscription
+      parameters:
+      - description: Subscription data
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateSubscriptionRequest'
+      produces:
+      - text/plain
+      responses:
+        "201":
+          description: Subscription created
+          schema:
+            type: string
+      summary: Create subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    delete:
+      description: Delete subscription by ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Subscription deleted
+          schema:
+            type: string
+      summary: Delete subscription
+      tags:
+      - subscriptions
+  /update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update subscription by ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.UpdateSubscriptionRequest'
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Subscription updated
+          schema:
+            type: string
+      summary: Update subscription
+      tags:
+      - subscriptions
+swagger: "2.0"
