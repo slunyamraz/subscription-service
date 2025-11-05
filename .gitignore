@@ -1,2 +1,30 @@
+# Dependency directories
+vendor/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
 .env
-.idea
+.env.local
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of go build
+/dist/
+/tmp/
+
+# Go workspace file
+go.work
