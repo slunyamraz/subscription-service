@@ -40,7 +40,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Domain.Subscription"
+                                "$ref": "#/definitions/domain.Subscription"
                             }
                         }
                     }
@@ -106,7 +106,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Domain.Subscription"
+                                "$ref": "#/definitions/domain.Subscription"
                             }
                         }
                     }
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Domain.CreateSubscriptionRequest"
+                            "$ref": "#/definitions/domain.CreateSubscriptionRequest"
                         }
                     }
                 ],
@@ -203,7 +203,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Domain.UpdateSubscriptionRequest"
+                            "$ref": "#/definitions/domain.UpdateSubscriptionRequest"
                         }
                     }
                 ],
@@ -219,7 +219,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "Domain.CreateSubscriptionRequest": {
+        "domain.CreateSubscriptionRequest": {
             "type": "object",
             "properties": {
                 "price": {
@@ -236,7 +236,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Domain.Subscription": {
+        "domain.Subscription": {
             "type": "object",
             "properties": {
                 "id": {
@@ -256,7 +256,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Domain.UpdateSubscriptionRequest": {
+        "domain.UpdateSubscriptionRequest": {
             "type": "object",
             "properties": {
                 "id": {

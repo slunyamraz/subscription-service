@@ -1,13 +1,15 @@
-package Config
+package config
 
 import (
 	"github.com/joho/godotenv"
 	"log/slog"
 	"os"
+	"strings"
 )
 
 type Config struct {
-	SQL *SQL
+	SQL   *SQL
+	Kafka *Kafka
 }
 
 type SQL struct {
@@ -16,6 +18,12 @@ type SQL struct {
 	Database string
 	Username string
 	Password string
+}
+
+type Kafka struct {
+	Port    string
+	Brokers []string
+	Topic   string
 }
 
 func NewConfig() *Config {
@@ -32,6 +40,11 @@ func NewConfig() *Config {
 			Database: os.Getenv("DB_NAME"),
 			Username: os.Getenv("DB_USER"),
 			Password: os.Getenv("DB_PASSWORD"),
+		},
+		Kafka: &Kafka{
+			Port:    os.Getenv("KAFKA_PORT"),
+			Brokers: strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+			Topic:   os.Getenv("KAFKA_TOPIC"),
 		},
 	}
 }

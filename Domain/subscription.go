@@ -1,4 +1,4 @@
-package Domain
+package domain
 
 type Subscription struct {
 	ID           string `json:"id"`

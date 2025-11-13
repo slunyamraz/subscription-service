@@ -5,15 +5,16 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"s/service"
 
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	config "s/Config"
-	handler "s/Handler"
-	repository "s/Repository"
+	"s/config"
 	_ "s/docs"
+	"s/handler"
+	"s/repository"
 )
 
 // @title Subscriptions API
@@ -44,9 +45,14 @@ func main() {
 		log.Println("Migrations applied successfully")
 		return
 	}
+
 	repo := repository.NewSubscriptionRepo(db)
-	hand := handler.NewSubscriptionHandler(repo)
+	outboxRepo := repository.NewOutbox(db)
+	serviceSub := service.NewSubscriptionSerivce(db, repo, outboxRepo)
+
+	hand := handler.NewSubscriptionHandler(serviceSub)
 	http.Handle("/swagger/", httpSwagger.WrapHandler)
 	handler.RegisterRoutes(hand)
+	print("server start")
 	handler.ServeStart()
 }

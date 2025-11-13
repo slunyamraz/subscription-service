@@ -4,17 +4,16 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	domain "s/Domain"
-	repository "s/Repository"
+	"s/domain"
+	"s/service"
 )
 
 type SubscriptionHandler struct {
-	repo *repository.SubscriptionRepo
+	serviceS *service.SubscriptionSerivce
 }
 
-func NewSubscriptionHandler(repo *repository.SubscriptionRepo) *SubscriptionHandler {
-	return &SubscriptionHandler{repo: repo}
-
+func NewSubscriptionHandler(servicesub *service.SubscriptionSerivce) *SubscriptionHandler {
+	return &SubscriptionHandler{serviceS: servicesub}
 }
 
 func RegisterRoutes(h *SubscriptionHandler) {
@@ -54,7 +53,7 @@ func (s *SubscriptionHandler) GetHandler(w http.ResponseWriter, r *http.Request)
 		slog.Error("user_id is required")
 		return
 	}
-	subs, err := s.repo.GetByUserID(userID)
+	subs, err := s.serviceS.GetByUserID(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error())
@@ -81,7 +80,7 @@ func (s *SubscriptionHandler) GetListHandler(w http.ResponseWriter, r *http.Requ
 		slog.Error("not allowed request", "method", r.Method)
 		return
 	}
-	subs, err := s.repo.GetListRepo()
+	subs, err := s.serviceS.GetListRepo()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error())
@@ -111,6 +110,7 @@ func (s *SubscriptionHandler) PostHandler(w http.ResponseWriter, r *http.Request
 		slog.Error("not allowed request", "method", r.Method)
 		return
 	}
+
 	var subreq domain.CreateSubscriptionRequest
 	err := json.NewDecoder(r.Body).Decode(&subreq)
 	if err != nil {
@@ -118,12 +118,14 @@ func (s *SubscriptionHandler) PostHandler(w http.ResponseWriter, r *http.Request
 		slog.Error(err.Error(), "err on handle lvl")
 		return
 	}
-	err = s.repo.Create(subreq)
+
+	err = s.serviceS.Create(r.Context(), subreq)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error(), "err on handle lvl")
 		return
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -141,13 +143,17 @@ func (s *SubscriptionHandler) DeleteHandler(w http.ResponseWriter, r *http.Reque
 		slog.Error("not allowed request", "method", r.Method)
 		return
 	}
+
 	id := r.PathValue("id")
-	err := s.repo.DeleteByID(id)
+
+	err := s.serviceS.Delete(r.Context(), id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error(), "err on handle lvl")
 		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // UpdateHandler godoc
@@ -166,6 +172,7 @@ func (s *SubscriptionHandler) UpdateHandler(w http.ResponseWriter, r *http.Reque
 		slog.Error("not allowed request", "method", r.Method)
 		return
 	}
+
 	var updatereq domain.UpdateSubscriptionRequest
 	err := json.NewDecoder(r.Body).Decode(&updatereq)
 	if err != nil {
@@ -174,7 +181,7 @@ func (s *SubscriptionHandler) UpdateHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	updatereq.ID = r.PathValue("id")
-	err = s.repo.UpdateByID(updatereq)
+	err = s.serviceS.UpdateByID(r.Context(), updatereq)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error(), "err on handle lvl")
@@ -202,7 +209,7 @@ func (s *SubscriptionHandler) GetTotalPrice(w http.ResponseWriter, r *http.Reque
 	user.UserID = r.URL.Query().Get("user_id")
 	user.ServiceName = r.URL.Query().Get("service_name")
 	user.StartDate = r.URL.Query().Get("start_date")
-	price, err := s.repo.GetTotalPrice(user)
+	price, err := s.serviceS.GetTotalPrice(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error(err.Error(), "err on handle lvl")

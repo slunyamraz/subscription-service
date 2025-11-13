@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
-	domain "s/Domain"
+	"s/domain"
 	"strconv"
 )
 
@@ -16,14 +16,15 @@ func NewSubscriptionRepo(db *sql.DB) *SubscriptionRepo {
 	return &SubscriptionRepo{db: db}
 }
 
-func (r *SubscriptionRepo) Create(req domain.CreateSubscriptionRequest) error {
-	query := `INSERT INTO subscriptions (service_name, price, user_id, start_date) 
-	          VALUES ($1, $2, $3, $4)`
-	_, err := r.db.Exec(query, req.ServiceName, req.Price, req.UserID, req.StartDate)
+func (r *SubscriptionRepo) Create(tx *sql.Tx, req domain.CreateSubscriptionRequest) (string, error) {
+	var id string
+	err := tx.QueryRow(`INSERT INTO subscriptions (service_name, price, user_id, start_date) 
+	          VALUES ($1, $2, $3, $4) RETURNING id`, req.ServiceName, req.Price, req.UserID, req.StartDate).Scan(&id)
 	if err != nil {
-		return err
+		slog.Error("error in CreateSub", "error", err)
+		return "", err
 	}
-	return nil
+	return id, nil
 }
 
 func (r *SubscriptionRepo) GetByUserID(userID string) ([]domain.Subscription, error) {
@@ -68,8 +69,8 @@ func (s *SubscriptionRepo) GetListRepo() ([]domain.Subscription, error) {
 	return subs, nil
 }
 
-func (s *SubscriptionRepo) DeleteByID(id string) error {
-	status, err := s.db.Exec("DELETE FROM subscriptions WHERE id = $1", id)
+func (s *SubscriptionRepo) DeleteByID(tx *sql.Tx, id string) error {
+	status, err := tx.Exec("DELETE FROM subscriptions WHERE id = $1", id)
 	if err != nil {
 		slog.Error("error in delete repo:", err)
 		return err
@@ -87,9 +88,9 @@ func (s *SubscriptionRepo) DeleteByID(id string) error {
 	return nil
 }
 
-func (s *SubscriptionRepo) UpdateByID(upd domain.UpdateSubscriptionRequest) error {
+func (s *SubscriptionRepo) UpdateByID(tx *sql.Tx, upd domain.UpdateSubscriptionRequest) error {
 	if upd.Price != 0 && upd.StartDate != "" {
-		status, err := s.db.Exec(
+		status, err := tx.Exec(
 			"UPDATE subscriptions SET price = $1, start_date = $2 WHERE id = $3",
 			upd.Price, upd.StartDate, upd.ID)
 		if err != nil {
@@ -109,7 +110,7 @@ func (s *SubscriptionRepo) UpdateByID(upd domain.UpdateSubscriptionRequest) erro
 	}
 
 	if upd.Price == 0 {
-		status, err := s.db.Exec(
+		status, err := tx.Exec(
 			"UPDATE subscriptions SET start_date = $1 WHERE id = $2",
 			upd.StartDate, upd.ID)
 		if err != nil {
@@ -129,7 +130,7 @@ func (s *SubscriptionRepo) UpdateByID(upd domain.UpdateSubscriptionRequest) erro
 	}
 
 	if upd.StartDate == "" {
-		status, err := s.db.Exec(
+		status, err := tx.Exec(
 			"UPDATE subscriptions SET price = $1 WHERE id = $2",
 			upd.Price, upd.ID)
 		if err != nil {

@@ -17,8 +17,11 @@ require (
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
+	github.com/pierrec/lz4/v4 v4.1.22 // indirect
+	github.com/segmentio/kafka-go v0.4.49 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	go.uber.org/multierr v1.11.0 // indirect

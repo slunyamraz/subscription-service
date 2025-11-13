@@ -5,7 +5,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"log/slog"
-	config "s/Config"
+	"s/config"
 )
 
 func NewDB(cfg *config.Config) (*sql.DB, error) {
