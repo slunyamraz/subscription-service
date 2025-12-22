@@ -1,0 +1,39 @@
+name: Go CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Debug
+        run: |
+          echo "📁 Current dir: $(pwd)"
+          echo ""
+          echo "📄 Files in root:"
+          ls -la
+          echo ""
+          echo "🔍 Finding go.mod:"
+          find . -name "go.mod" 2>/dev/null
+          echo ""
+          echo "📋 Content of first go.mod:"
+          cat $(find . -name "go.mod" | head -1) 2>/dev/null || echo "No go.mod found"
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build
+        run: |
+          echo "🚀 Building..."
+          go build ./...
+          echo "✅ Build done!"
